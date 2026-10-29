@@ -1,468 +1,262 @@
-# Campus Skill Exchange Platform
+# Campus Skill Exchange
 
-Campus Skill Exchange is a full-stack MERN web application where students can list skills, discover peer instructors, request learning sessions, schedule accepted sessions, track progress, mark sessions as completed, and give reviews and ratings.
+<p align="center">
+  <strong>Share what you know. Learn what you need. Grow together.</strong>
+</p>
 
-The platform is designed to make peer-to-peer learning inside a campus more organized and accessible.
+<p align="center">
+  A full-stack peer-to-peer learning platform that helps students share skills, find campus instructors, organize learning sessions, and review completed exchanges.
+</p>
+
+<p align="center">
+  <a href="https://skill-site-p7b8.vercel.app/">Live Website</a> ·
+  <a href="https://campus-skill-exchange-api-hys9.onrender.com/">Backend API</a> ·
+  <a href="https://github.com/kartheeknaiduch/SKILL_SITE">Source Code</a>
+</p>
 
 ---
 
-## Problem Statement
+## Overview
 
-In colleges, many students have useful skills, but there is no structured system to find who can teach a particular skill. Students usually depend on WhatsApp groups or personal contacts, which makes skill discovery and session management difficult.
+Students often have useful skills but no central place to find peers who can teach them. Campus Skill Exchange provides a shared space to list skills, discover instructors, request sessions, coordinate learning, and leave feedback after an exchange.
 
-Campus Skill Exchange solves this by providing a centralized platform where students can offer skills, request sessions, schedule learning, track progress, and review instructors.
-
----
+The application uses a React single-page frontend, an Express REST API, MongoDB Atlas for persistence, and JWT-based authentication.
 
 ## Features
 
-### Authentication
+- **Authentication:** student registration and login, password hashing, JWT-based sessions, and protected frontend routes.
+- **Skill marketplace:** browse skills, view instructor information, create skill listings, and edit or delete listings.
+- **Session requests:** send and receive requests, accept or reject requests, schedule sessions, and track progress through completion.
+- **Instructor profiles:** view instructor details, skills, reviews, and ratings.
+- **Reviews and ratings:** let learners provide feedback after a completed session.
+- **Notifications:** notification endpoints and a navbar unread-count indicator.
+- **Dashboard and analytics:** dashboard views and backend analytics/trending endpoints.
+- **Role-aware navigation:** admin navigation is shown for users whose role is `admin`.
+- **Responsive UI:** React pages styled with a shared CSS design system.
 
-* User registration and login
-* JWT-based authentication
-* Password hashing
-* Protected routes
-* Auth state management using frontend context
-
-### Skill Management
-
-* Add a skill
-* View all listed skills
-* Edit and delete own skills
-* Skill category, description, and learning mode
-* Instructor information on each skill
-
-### Request and Session Management
-
-* Send request to learn a skill
-* Accept or reject received requests
-* Schedule accepted sessions
-* Mark session as In Progress
-* Mark session as Completed
-* Track sent and received requests from dashboard
-
-### Reviews and Ratings
-
-* Learner can review instructor after session completion
-* Rating system for instructors
-* Skill-specific instructor rating
-* Instructor details page with:
-
-  * Instructor name
-  * Listed skills
-  * Reviews
-  * Overall rating
-  * Skill-specific rating
-
-### Additional Features
-
-* User dashboard
-* Profile page
-* Notifications structure
-* Analytics backend structure
-* MongoDB Atlas database connection
-* Clean frontend-backend API integration using Axios
-
----
+> Feature availability depends on the current implementation and database state. Real-time messaging, AI matching, and payment processing are not part of the current stack.
 
 ## Tech Stack
 
-### Frontend
+| Layer | Technology | Purpose |
+|---|---|---|
+| Frontend | React 19, JavaScript, Vite | UI and development/build tooling |
+| Routing | React Router DOM | Client-side page navigation and protected routes |
+| API client | Axios | HTTP requests to the backend; attaches a stored JWT as a Bearer token |
+| Styling | CSS | Responsive layouts, cards, forms, gradients, and interaction states |
+| Backend | Node.js, Express 4 | REST API and middleware |
+| Database | MongoDB Atlas, Mongoose | Document storage and object modeling |
+| Authentication | JSON Web Tokens (JWT), bcryptjs | Token-based authentication and password hashing |
+| Middleware/config | cors, dotenv | Cross-origin policy and environment configuration |
+| Frontend hosting | Vercel | Production frontend deployment |
+| Backend hosting | Render | Public Node.js API deployment |
 
-* React.js
-* Vite
-* JavaScript
-* HTML
-* CSS
-* React Router DOM
-* Axios
-* Context API
+## Architecture
 
-### Backend
-
-* Node.js
-* Express.js
-* MongoDB
-* Mongoose
-* JWT
-* bcryptjs
-* dotenv
-* cors
-* nodemon
-
-### Database
-
-* MongoDB Atlas
-
----
-
-## Project Workflow
-
-```txt
-Request Sent
-↓
-Pending
-↓
-Accepted / Rejected
-↓
-Scheduled
-↓
-In Progress
-↓
-Completed
-↓
-Review and Rating
+```mermaid
+flowchart TD
+    A[Student in browser] --> B[React + Vite frontend]
+    B --> C[Axios API client]
+    C -->|HTTPS /api requests + Bearer token| D[Express REST API on Render]
+    D --> E[JWT authentication and route middleware]
+    D --> F[Mongoose models]
+    F --> G[(MongoDB Atlas)]
+    H[Vercel environment variables] -. configure VITE_API_URL .-> C
+    I[Render environment variables] -. configure secrets and CORS_ORIGIN .-> D
 ```
 
----
+The frontend and backend are deployed separately. The frontend reads `VITE_API_URL` at build time. The backend reads private values such as `MONGO_URI` and `JWT_SECRET` from its hosting environment; secrets must never be placed in frontend variables or committed to Git.
 
-## Folder Structure
+## Main User Workflow
 
-```txt
-campus-skill-exchange/
-│
+```mermaid
+flowchart LR
+    A[Register or log in] --> B[Browse skills]
+    B --> C[Choose an instructor / skill]
+    C --> D[Send session request]
+    D --> E{Instructor response}
+    E -->|Reject| F[Request closed]
+    E -->|Accept| G[Schedule session]
+    G --> H[Track progress]
+    H --> I[Mark completed]
+    I --> J[Leave review and rating]
+```
+
+## Repository Structure
+
+```text
+SKILL_SITE/
 ├── backend/
 │   ├── config/
-│   ├── controllers/
-│   ├── middleware/
-│   ├── models/
-│   ├── routes/
-│   ├── .env.example
+│   │   └── db.js                 # MongoDB connection
+│   ├── controllers/              # Request and business logic
+│   ├── middleware/               # Authentication and route middleware
+│   ├── models/                   # Mongoose schemas
+│   ├── routes/                   # Express route modules
+│   ├── .env.example              # Safe environment-variable template
 │   ├── package.json
-│   ├── package-lock.json
-│   └── server.js
-│
+│   ├── seed.js                   # Optional sample-data seeding
+│   └── server.js                 # Express app and API route mounting
 ├── frontend/
-│   ├── public/
+│   ├── public/                   # Static assets
 │   ├── src/
-│   │   ├── api/
-│   │   ├── assets/
-│   │   ├── components/
-│   │   ├── context/
-│   │   ├── data/
-│   │   ├── pages/
-│   │   ├── App.jsx
-│   │   ├── App.css
-│   │   ├── index.css
-│   │   └── main.jsx
-│   │
+│   │   ├── api/api.js            # Axios instance and JWT header
+│   │   ├── components/           # Navbar, footer, and shared UI
+│   │   ├── context/              # Authentication context
+│   │   ├── data/                 # Static UI data
+│   │   ├── pages/                # Home, skills, auth, profile, dashboard, etc.
+│   │   ├── App.jsx               # Router and protected routes
+│   │   ├── App.css               # Shared responsive styles
+│   │   └── main.jsx              # React entry point
 │   ├── index.html
 │   ├── package.json
-│   ├── package-lock.json
 │   └── vite.config.js
-│
 ├── .gitignore
 └── README.md
 ```
 
----
+## Run Locally
 
-## Installation and Setup
+### Prerequisites
 
-### 1. Clone the Repository
+- Node.js and npm
+- A MongoDB Atlas cluster or another MongoDB instance
+- Git
+
+### 1. Clone the repository
 
 ```bash
-git clone https://github.com/mdyahiyaariz/campus-skill-exchange.git
-cd campus-skill-exchange
+git clone https://github.com/kartheeknaiduch/SKILL_SITE.git
+cd SKILL_SITE
 ```
 
-Replace `YOUR_USERNAME` with your GitHub username.
-
----
-
-## Backend Setup
-
-Go to the backend folder:
+### 2. Configure and run the backend
 
 ```bash
 cd backend
-```
-
-Install dependencies:
-
-```bash
 npm install
 ```
 
-Create a `.env` file inside the `backend` folder.
-
-You can refer to:
-
-```txt
-backend/.env.example
-```
-
-Add the following variables:
+Copy `backend/.env.example` to `backend/.env` and fill in your own values:
 
 ```env
 PORT=5000
-MONGO_URI=your_mongodb_connection_string_here
-JWT_SECRET=your_jwt_secret_here
+MONGO_URI=mongodb_connection_string
+JWT_SECRET=use_a_long_random_secret
 NODE_ENV=development
+CORS_ORIGIN=http://localhost:5173,https://skill-site-p7b8.vercel.app
 ```
 
-Start backend server:
+Keep `.env` private and never commit real credentials.
+
+Start the API:
 
 ```bash
 npm run dev
 ```
 
-Backend runs on:
+The local API listens at `http://localhost:5000`. Its health endpoint is `GET /`.
 
-```txt
-http://localhost:5000
-```
+### 3. Configure and run the frontend
 
----
-
-## Frontend Setup
-
-Open another terminal and go to the frontend folder:
+In a second terminal:
 
 ```bash
 cd frontend
-```
-
-Install dependencies:
-
-```bash
 npm install
 ```
 
-Start frontend:
+Create `frontend/.env` for local development:
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+Start Vite:
 
 ```bash
 npm run dev
 ```
 
-Frontend runs on:
+Open the local URL printed by Vite (typically `http://localhost:5173`).
 
-```txt
-http://localhost:5173
-```
+### Useful scripts
 
----
+| Directory | Command | Description |
+|---|---|---|
+| `frontend` | `npm run dev` | Start Vite development server |
+| `frontend` | `npm run build` | Build production assets |
+| `frontend` | `npm run preview` | Preview the production build locally |
+| `frontend` | `npm run lint` | Run ESLint |
+| `backend` | `npm run dev` | Start API with nodemon |
+| `backend` | `npm start` | Start API in production mode |
+| `backend` | `npm run seed` | Run the optional seed script |
 
-## Frontend and Backend Connection
+## Deployment
 
-The frontend connects to the backend using Axios.
+| Component | Hosting | URL |
+|---|---|---|
+| Frontend | Vercel | https://skill-site-p7b8.vercel.app |
+| Backend | Render | https://campus-skill-exchange-api-hys9.onrender.com |
+| Database | MongoDB Atlas | Private connection string stored in Render |
 
-File:
+### Vercel frontend settings
 
-```txt
-frontend/src/api/api.js
-```
+- Root directory: `frontend`
+- Framework: Vite
+- Install command: `npm install`
+- Build command: `npm run build`
+- Output directory: `dist`
+- Environment variable: `VITE_API_URL=https://campus-skill-exchange-api-hys9.onrender.com`
 
-Example:
+Vite builds the frontend at deployment time, so changes to `VITE_API_URL` require a new frontend build/deployment.
 
-```js
-import axios from "axios";
+### Render backend settings
 
-const API = axios.create({
-  baseURL: "http://localhost:5000/api",
-});
+- Repository: `kartheeknaiduch/SKILL_SITE`
+- Branch: `main`
+- Build command: `cd backend && npm install`
+- Start command: `cd backend && npm start`
+- Runtime: Node.js
+- Required environment variables:
+  - `MONGO_URI`: MongoDB connection string
+  - `JWT_SECRET`: long, random server-side signing secret
+  - `NODE_ENV=production`
+  - `CORS_ORIGIN`: comma-separated allowed frontend origins, including the production Vercel domain
 
-API.interceptors.request.use((req) => {
-  const token = localStorage.getItem("token");
+The free Render service may spin down after inactivity, so its first request after idle time can take longer.
 
-  if (token) {
-    req.headers.Authorization = `Bearer ${token}`;
-  }
+## API Overview
 
-  return req;
-});
+All API routes are mounted under `/api`.
 
-export default API;
-```
+| Prefix | Purpose |
+|---|---|
+| `/api/auth` | Registration and login |
+| `/api/skills` | Skill listings and skill management |
+| `/api/requests` | Session requests and their lifecycle |
+| `/api/reviews` | Reviews and instructor/skill ratings |
+| `/api/users` | User and instructor information |
+| `/api/analytics` | Dashboard analytics and trending data |
+| `/api/notifications` | Notifications and read status |
 
-For deployment, replace the local backend URL with your deployed backend URL.
+For protected endpoints, the frontend API client sends `Authorization: Bearer <token>` when a token exists in local storage. Check each route's middleware for its specific authorization requirements.
 
----
+## Security Notes
 
-## Environment Variables
+- Never commit `backend/.env`, MongoDB credentials, JWT secrets, access tokens, or private keys.
+- Keep server secrets in Render environment variables. Only public configuration such as `VITE_API_URL` belongs in the frontend.
+- Configure MongoDB Atlas network access and database-user permissions deliberately.
+- Rotate any credential that has been exposed and update the corresponding hosting environment variable.
+- CORS is restricted to configured frontend origins plus local development defaults. Update `CORS_ORIGIN` when adding a new frontend domain.
+- The optional seed script does not automatically create a default admin account. Use a deliberate, secure admin-provisioning process.
 
-The real `.env` file is not pushed to GitHub for security reasons.
+## Current Scope and Future Work
 
-Required backend variables:
+The current project focuses on authentication, skill listings, session requests, progress tracking, instructor profiles, reviews, notifications, and analytics scaffolding.
 
-```env
-PORT=5000
-MONGO_URI=your_mongodb_connection_string_here
-JWT_SECRET=your_jwt_secret_here
-NODE_ENV=development
-```
+Potential next steps include stronger automated tests, API documentation with request/response examples, pagination and server-side filtering, more complete analytics, secure admin provisioning, richer accessibility checks, and production monitoring.
 
-GitHub should include:
+## Project Summary
 
-```txt
-backend/.env.example
-```
-
-GitHub should not include:
-
-```txt
-backend/.env
-```
-
----
-
-## API Routes
-
-### Auth Routes
-
-```txt
-POST /api/auth/register
-POST /api/auth/login
-```
-
-### Skill Routes
-
-```txt
-GET    /api/skills
-POST   /api/skills
-GET    /api/skills/:id
-PUT    /api/skills/:id
-DELETE /api/skills/:id
-```
-
-### Request and Session Routes
-
-```txt
-POST /api/requests
-GET  /api/requests/sent
-GET  /api/requests/received
-PUT  /api/requests/:id/status
-PUT  /api/requests/:id/schedule
-PUT  /api/requests/:id/progress
-PUT  /api/requests/:id/complete
-```
-
-### Review Routes
-
-```txt
-POST /api/reviews
-GET  /api/reviews
-GET  /api/reviews/instructor/:instructorId
-GET  /api/reviews/skill/:skillId
-```
-
-### Notification Routes
-
-```txt
-GET /api/notifications
-PUT /api/notifications/:id/read
-```
-
-### Analytics Routes
-
-```txt
-GET /api/analytics
-```
-
-Route names may vary slightly depending on the final backend implementation.
-
----
-
-## Database Collections
-
-MongoDB stores data in collections such as:
-
-```txt
-users
-skills
-sessionrequests
-reviews
-notifications
-```
-
-Main database:
-
-```txt
-campusSkillExchange
-```
-
----
-
-## Screenshots
-
-Add screenshots after uploading images to the repository.
-
-```md
-## Home Page
-![Home Page](./screenshots/home.png)
-
-## Skills Page
-![Skills Page](./screenshots/skills.png)
-
-## Dashboard
-![Dashboard](./screenshots/dashboard.png)
-
-## Instructor Profile
-![Instructor Profile](./screenshots/instructor.png)
-```
-
----
-
-## Current Status
-
-Completed:
-
-* Frontend UI
-* Backend APIs
-* MongoDB Atlas connection
-* User registration and login
-* JWT authentication
-* Protected routes
-* Skill listing and management
-* Request accept/reject workflow
-* Session scheduling
-* Session progress tracking
-* Session completion
-* Review and rating system
-* Instructor profile/details page
-* Dashboard
-* Notifications backend structure
-* Analytics backend structure
-
----
-
-## Future Improvements
-
-* Admin dashboard
-* Trending skills section
-* Skill recommendation system
-* Search, filter, sorting, and pagination
-* Real-time notifications
-* Email notifications
-* Deployment on Vercel and Render
-* Profile image upload
-* Calendar integration for scheduled sessions
-* Certificate or badge system after completed sessions
-
----
-
-## Resume Description
-
-Campus Skill Exchange Platform is a full-stack MERN peer-learning platform where students can list skills, discover peer instructors, request learning sessions, schedule accepted sessions, track session progress, mark sessions as completed, and give reviews and ratings. The project includes JWT authentication, MongoDB database design, REST APIs, protected routes, instructor profiles, and frontend-backend integration using Axios.
-
----
-
-## Resume Points
-
-* Built a full-stack MERN peer-learning platform where students can list skills, request learning sessions, schedule accepted sessions, and track session progress.
-* Implemented JWT authentication, password hashing, protected routes, REST APIs, and MongoDB models for users, skills, session requests, reviews, and notifications.
-* Designed a complete request-to-session workflow including request acceptance, session scheduling, progress tracking, completion marking, and post-session review/rating.
-* Developed instructor profile functionality showing instructor details, listed skills, reviews, overall rating, and skill-specific rating.
-
----
-
-## Author
-
-Developed by Md Yahiya Ariz.
-
----
-
-## License
-
-This project is created for learning, portfolio, and academic purposes.
-"# SKILL_SITE" 
+Campus Skill Exchange is a full-stack MERN application built to make peer learning easier to organize on campus. It combines a React interface with a Node.js/Express API, MongoDB persistence, and JWT authentication to support a workflow from skill discovery through session completion and feedback.
