@@ -5,8 +5,32 @@ const connectDB = require("./config/db");
 
 const app = express();
 
-// Middleware
-app.use(cors());
+// Allow the deployed frontend and local development origins.
+// Set CORS_ORIGIN as a comma-separated list in the hosting environment.
+const defaultOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "https://skill-site-p7b8.vercel.app",
+  "https://skill-site-p7b8-kartheeknaiduchs-projects.vercel.app",
+  "https://skill-site-p7b8-git-main-kartheeknaiduchs-projects.vercel.app",
+];
+
+const allowedOrigins = (process.env.CORS_ORIGIN || defaultOrigins.join(","))
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      // Requests without an Origin header include health checks and server-to-server calls.
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(null, false);
+    },
+  })
+);
 app.use(express.json());
 
 // Connect to MongoDB
@@ -29,7 +53,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/notifications", notificationRoutes);
 
-// Basic route
+// Basic health endpoint
 app.get("/", (req, res) => {
   res.json({ message: "Campus Skill Exchange API is running" });
 });
