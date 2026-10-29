@@ -44,22 +44,22 @@ const seedSkills = [
 
 async function seed() {
   try {
+    if (!process.env.MONGO_URI) {
+      throw new Error("MONGO_URI is missing. Configure it in your local backend/.env file.");
+    }
+
     await mongoose.connect(process.env.MONGO_URI);
     console.log("Connected to MongoDB for seeding...");
 
-    // Check if mentor exists
+    // Do not create an admin account with a hardcoded public password.
+    // Create/promote an administrator through a separate secure setup process.
     let mentor = await User.findOne({ email: "mentor@campus.edu" });
     if (!mentor) {
-      mentor = await User.create({
-        name: "Campus Mentor",
-        email: "mentor@campus.edu",
-        password: "Password123!",
-        branch: "Computer Science",
-        year: "4",
-        experience: "3 years peer tutoring experience",
-        role: "admin",
-      });
-      console.log("Created default mentor/admin account (mentor@campus.edu / Password123!)");
+      console.warn(
+        "No mentor@campus.edu account exists. Create an administrator using a secure, private setup process before seeding skills."
+      );
+      process.exitCode = 1;
+      return;
     }
 
     const existingSkillCount = await Skill.countDocuments();
@@ -75,10 +75,11 @@ async function seed() {
     }
 
     console.log("Seeding finished successfully!");
-    process.exit(0);
   } catch (err) {
-    console.error("Seeding error:", err);
-    process.exit(1);
+    console.error("Seeding error:", err.message);
+    process.exitCode = 1;
+  } finally {
+    await mongoose.disconnect().catch(() => {});
   }
 }
 
