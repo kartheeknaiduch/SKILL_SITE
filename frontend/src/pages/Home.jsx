@@ -11,16 +11,28 @@ const categories = [
   "Other",
 ];
 
+const categoryIcons = {
+  Programming: "⌘",
+  Design: "✎",
+  Academics: "▤",
+  Communication: "↗",
+  "Web Development": "⌁",
+  Other: "＋",
+};
+
 const steps = [
   {
+    number: "01",
     title: "Find a skill",
     description: "Search the most popular student-led skills and choose what fits your goals.",
   },
   {
+    number: "02",
     title: "Request a session",
     description: "Send a request to a skill provider and schedule a time that works for both of you.",
   },
   {
+    number: "03",
     title: "Learn or teach",
     description: "Share knowledge, get feedback, and build your campus reputation.",
   },
@@ -62,6 +74,7 @@ function Home() {
 
         <div className="hero-visual">
           <div className="hero-card hero-card-main">
+            <span className="hero-card-kicker">LEARN TOGETHER · GROW TOGETHER</span>
             <strong>Find a session</strong>
             <p>Browse student instructors and book a learning session quickly.</p>
           </div>
@@ -80,6 +93,7 @@ function Home() {
         <div className="how-grid">
           {steps.map((step) => (
             <article key={step.title} className="how-card">
+              <span className="step-number">{step.number}</span>
               <h3>{step.title}</h3>
               <p>{step.description}</p>
             </article>
@@ -95,6 +109,7 @@ function Home() {
         <div className="category-grid">
           {categories.map((category) => (
             <div key={category} className="category-card">
+              <span className="category-icon" aria-hidden="true">{categoryIcons[category]}</span>
               <span>{category}</span>
             </div>
           ))}
@@ -123,6 +138,7 @@ function Home() {
 
       <section className="cta-section">
         <div>
+          <span className="cta-eyebrow">YOUR NEXT SKILL STARTS HERE</span>
           <h2>Ready to jump in?</h2>
           <p>
             Create your profile, add your first skill offer, or start exploring
