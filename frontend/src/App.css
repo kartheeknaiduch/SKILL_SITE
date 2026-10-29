@@ -1340,3 +1340,48 @@ textarea:focus-visible {
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/* Small details for the new homepage icon/label elements */
+.step-number {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  color: #8b83ff;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.category-card::before {
+  content: none;
+}
+
+.category-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 2.7rem;
+  width: 2.7rem;
+  height: 2.7rem;
+  border-radius: 0.9rem;
+  color: #5145cd;
+  background: linear-gradient(135deg, #eeedff, #e0faf5);
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.hero-card-kicker,
+.cta-eyebrow {
+  display: inline-block;
+  margin-bottom: 0.7rem;
+  color: #0f766e;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+}
+
+.hero-card-kicker {
+  padding: 0.35rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(20, 184, 166, 0.1);
+}
