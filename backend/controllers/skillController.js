@@ -164,7 +164,7 @@ const getSkillById = async (req, res) => {
 
 const updateSkill = async (req, res) => {
   try {
-    let skill = await Skill.findById(req.params.id);
+    const skill = await Skill.findById(req.params.id);
 
     if (!skill) {
       return res.status(404).json({ error: "Skill not found" });
@@ -176,14 +176,28 @@ const updateSkill = async (req, res) => {
         .json({ error: "Only owner can update this skill" });
     }
 
-    skill = await Skill.findByIdAndUpdate(req.params.id, req.body, {
+    // Only allow fields that users are meant to edit. In particular, never
+    // accept offeredBy or other internal fields from the request body.
+    const editableFields = ["title", "category", "description", "mode"];
+    const updates = {};
+    for (const field of editableFields) {
+      if (Object.prototype.hasOwnProperty.call(req.body, field)) {
+        updates[field] = req.body[field];
+      }
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ error: "No editable skill fields provided" });
+    }
+
+    const updatedSkill = await Skill.findByIdAndUpdate(req.params.id, updates, {
       new: true,
       runValidators: true,
     });
 
     res.status(200).json({
       success: true,
-      skill,
+      skill: updatedSkill,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
