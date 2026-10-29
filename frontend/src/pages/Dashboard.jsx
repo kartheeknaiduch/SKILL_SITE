@@ -537,6 +537,7 @@ function Dashboard() {
                                 <label>
                                   Date
                                   <input
+                                    type="date"
                                     value={scheduleFormData.scheduledDate}
                                     onChange={(e) => handleScheduleFormChange("scheduledDate", e.target.value)}
                                   />

@@ -177,6 +177,12 @@ async function scheduleRequest(req, res) {
     request.status = "Scheduled";
     await request.save();
 
+    const populatedRequest = await request.populate([
+      { path: "skill" },
+      { path: "requester", select: "name email" },
+      { path: "owner", select: "name email" },
+    ]);
+
     // Notify requester about scheduled session
     try {
       const msgParts = [`Your session for "${populatedRequest.skill.title}" has been scheduled.`];
@@ -189,12 +195,6 @@ async function scheduleRequest(req, res) {
         type: "scheduled",
       });
     } catch (e) {}
-
-    const populatedRequest = await request.populate([
-      { path: "skill" },
-      { path: "requester", select: "name email" },
-      { path: "owner", select: "name email" },
-    ]);
 
     res.status(200).json({ success: true, request: populatedRequest });
   } catch (error) {

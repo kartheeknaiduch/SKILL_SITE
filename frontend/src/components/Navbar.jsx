@@ -41,6 +41,7 @@ function Navbar() {
             <NavLink to="/notifications">Notifications{unread > 0 && <span className="notif-badge">{unread}</span>}</NavLink>
             <NavLink to="/add-skill">Add Skill</NavLink>
             <NavLink to="/profile">Profile</NavLink>
+            {user?.role === "admin" && <NavLink to="/admin">Admin</NavLink>}
           </>
         )}
         {!isAuthenticated ? (

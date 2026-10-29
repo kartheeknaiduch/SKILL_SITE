@@ -30,24 +30,39 @@ function AdminStats() {
       {!stats ? (
         <div className="empty-state">Loading stats...</div>
       ) : (
-        <div className="stats-grid">
-          <div className="stat-card">
-            <span>Total Skills</span>
-            <strong>{stats.totalSkills}</strong>
+        <>
+          <div className="stats-grid">
+            <div className="stat-card">
+              <span>Total Skills</span>
+              <strong>{stats.totalSkills}</strong>
+            </div>
+            <div className="stat-card">
+              <span>Total Users</span>
+              <strong>{stats.totalUsers}</strong>
+            </div>
+            <div className="stat-card">
+              <span>Total Requests</span>
+              <strong>{stats.totalRequests}</strong>
+            </div>
+            <div className="stat-card">
+              <span>Completed Sessions</span>
+              <strong>{stats.completedSessions}</strong>
+            </div>
           </div>
-          <div className="stat-card">
-            <span>Total Users</span>
-            <strong>{stats.totalUsers}</strong>
-          </div>
-          <div className="stat-card">
-            <span>Total Requests</span>
-            <strong>{stats.totalRequests}</strong>
-          </div>
-          <div className="stat-card">
-            <span>Completed Sessions</span>
-            <strong>{stats.completedSessions}</strong>
-          </div>
-        </div>
+
+          {stats.topMentors && stats.topMentors.length > 0 && (
+            <div className="dashboard-section" style={{ marginTop: "2rem" }}>
+              <h2>Top Mentors</h2>
+              <div className="chip-list">
+                {stats.topMentors.map((mentor) => (
+                  <div key={mentor._id} className="chip">
+                    <strong>{mentor.name}</strong>: {mentor.count} sessions
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

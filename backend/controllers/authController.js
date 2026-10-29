@@ -43,6 +43,7 @@ const register = async (req, res) => {
         year: user.year,
         photo: user.photo,
         experience: user.experience,
+        role: user.role,
       },
     });
   } catch (error) {
@@ -83,6 +84,7 @@ const login = async (req, res) => {
         year: user.year,
         photo: user.photo,
         experience: user.experience,
+        role: user.role,
       },
     });
   } catch (error) {
