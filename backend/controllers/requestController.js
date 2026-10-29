@@ -208,19 +208,41 @@ async function updateRequestProgress(req, res) {
     const request = await SessionRequest.findById(req.params.id);
     if (!request) return res.status(404).json({ error: "Request not found" });
 
-    // Only requester or owner can update respective notes
+    const userId = req.user._id.toString();
+    const isRequester = request.requester.toString() === userId;
+    const isOwner = request.owner.toString() === userId;
+
+    // Every progress update must come from a participant in this session.
+    if (!isRequester && !isOwner) {
+      return res.status(403).json({ error: "Only session participants can update progress" });
+    }
+
+    const allowedProgressStatuses = ["Not Started", "In Progress", "Completed"];
+    if (progressStatus !== undefined && !allowedProgressStatuses.includes(progressStatus)) {
+      return res.status(400).json({ error: "Invalid progress status" });
+    }
+
+    if (resources !== undefined && !Array.isArray(resources)) {
+      return res.status(400).json({ error: "Resources must be an array" });
+    }
+
+    // Preserve role-specific notes permissions.
     if (learnerNotes !== undefined) {
-      if (request.requester.toString() !== req.user._id.toString())
+      if (!isRequester) {
         return res.status(403).json({ error: "Only learner can update learner notes" });
+      }
       request.learnerNotes = learnerNotes;
     }
+
     if (mentorNotes !== undefined) {
-      if (request.owner.toString() !== req.user._id.toString())
+      if (!isOwner) {
         return res.status(403).json({ error: "Only mentor can update mentor notes" });
+      }
       request.mentorNotes = mentorNotes;
     }
-    if (progressStatus) request.progressStatus = progressStatus;
-    if (resources) request.resources = resources;
+
+    if (progressStatus !== undefined) request.progressStatus = progressStatus;
+    if (resources !== undefined) request.resources = resources;
 
     await request.save();
     const populated = await request.populate([
@@ -233,4 +255,3 @@ async function updateRequestProgress(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
-
