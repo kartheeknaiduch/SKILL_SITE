@@ -29,7 +29,7 @@ function Navbar() {
 
   return (
     <nav className="navbar">
-      <div className="navbar-brand">Campus Skill Exchange</div>
+      <div className="navbar-brand"><span className="brand-mark" aria-hidden="true">✦</span><span>Campus Skill Exchange</span></div>
       <div className="navbar-links">
         <NavLink to="/" end>
           Home
